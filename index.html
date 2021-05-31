@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ToDo list</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      class ToDoApp extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            todos: [],
+            text: "",
+          };
+
+          this.handleChange = this.handleChange.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+          this.handleClick = this.handleClick.bind(this);
+        }
+
+        handleClick(id) {
+          this.deleteItem(id);
+        }
+
+        handleChange(e, id) {
+          if (e.target.type !== "checkbox") {
+            this.setState({ text: e.target.value });
+          } else this.completeItem(e);
+        }
+
+        handleSubmit(e) {
+          e.preventDefault();
+          if (this.state.text === "") {
+            return;
+          }
+          let newToDo = {
+            text: this.state.text,
+            id: Math.round(Math.random() * 10000),
+            isChecked: false,
+          };
+          this.setState((prevState) => ({
+            todos: prevState.todos.concat(newToDo),
+            text: "",
+          }));
+        }
+
+        deleteItem(id) {
+          const newTodos = this.state.todos.filter((item) => item.id !== id);
+          this.setState({
+            todos: newTodos,
+          });
+        }
+
+        completeItem(id) {
+          const newTodos = this.state.todos.map((item) => {});
+        }
+
+        render() {
+          return (
+            <div>
+              <h1>ToDo</h1>
+              <ToDoList
+                todos={this.state.todos}
+                change={this.handleChange}
+                click={this.handleClick}
+              />
+              <form onSubmit={this.handleSubmit}>
+                <input
+                  value={this.state.text}
+                  onChange={this.handleChange}
+                ></input>
+                <button id="btn-add" className="btn">
+                  Добавить
+                </button>
+              </form>
+            </div>
+          );
+        }
+      }
+
+      class ToDoList extends React.Component {
+        render() {
+          const { change, click, check, todos } = this.props;
+          return (
+            <ul>
+              {this.props.todos.map((item) => (
+                <li key={item.id}>
+                  <input
+                    type="checkbox"
+                    checked={(e) => check(e, item.id)}
+                    onChange={(e) => change(e, item.id)}
+                  ></input>
+                  <p>{item.text}</p>
+                  <button
+                    id="btn-delete"
+                    className="btn"
+                    onClick={(e) => click(item.id)}
+                  >
+                    Х
+                  </button>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+      }
+
+      ReactDOM.render(<ToDoApp />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
