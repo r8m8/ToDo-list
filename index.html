@@ -15,7 +15,23 @@
         constructor(props) {
           super(props);
           this.state = {
-            todos: [],
+            todos: [
+              {
+                text: "Наказать челядь",
+                id: 100000000,
+                isChecked: false,
+              },
+              {
+                text: "Собрать подать у крестьян",
+                id: 100000001,
+                isChecked: false,
+              },
+              {
+                text: "Покормить гавкало",
+                id: 100000002,
+                isChecked: false,
+              },
+            ],
             text: "",
           };
 
@@ -31,7 +47,7 @@
         handleChange(e, id) {
           if (e.target.type !== "checkbox") {
             this.setState({ text: e.target.value });
-          } else this.completeItem(e);
+          } else this.completeItem(id);
         }
 
         handleSubmit(e) {
@@ -58,13 +74,27 @@
         }
 
         completeItem(id) {
-          const newTodos = this.state.todos.map((item) => {});
+          console.log(id);
+          let todoArr = this.state.todos;
+          console.log(todoArr);
+          const newTodos = this.state.todos.map((item) => {
+            if (item.id === id) {
+              return {
+                ...item,
+                isChecked: !item.isChecked,
+              };
+            }
+            return item;
+          });
+          this.setState({
+            todos: newTodos,
+          });
         }
 
         render() {
           return (
-            <div>
-              <h1>ToDo</h1>
+            <div className="container">
+              <h1>Государевы дела</h1>
               <ToDoList
                 todos={this.state.todos}
                 change={this.handleChange}
@@ -72,11 +102,12 @@
               />
               <form onSubmit={this.handleSubmit}>
                 <input
+                  id="text"
                   value={this.state.text}
                   onChange={this.handleChange}
                 ></input>
                 <button id="btn-add" className="btn">
-                  Добавить
+                  Добавить указ
                 </button>
               </form>
             </div>
@@ -86,23 +117,26 @@
 
       class ToDoList extends React.Component {
         render() {
-          const { change, click, check, todos } = this.props;
+          const { change, click, todos } = this.props;
           return (
             <ul>
-              {this.props.todos.map((item) => (
+              {todos.map((item) => (
                 <li key={item.id}>
                   <input
+                    id={item.id}
                     type="checkbox"
-                    checked={(e) => check(e, item.id)}
                     onChange={(e) => change(e, item.id)}
                   ></input>
-                  <p>{item.text}</p>
+                  <label for={item.id}></label>
+                  <p className={item.isChecked ? "completed" : "uncompleted"}>
+                    {item.text}
+                  </p>
                   <button
                     id="btn-delete"
                     className="btn"
-                    onClick={(e) => click(item.id)}
+                    onClick={() => click(item.id)}
                   >
-                    Х
+                    Отменить указ
                   </button>
                 </li>
               ))}
